@@ -281,8 +281,15 @@ class NGreen {
     bool isGen9LPDerivative = false;
     bool isGen8LPDerivative = false;
     bool isRealTGL = false;  // true if CPU is genuine TGL (model 0x8C/0x8D), false if spoofed (RPL/ADL)
+    // Opt-in via -ngreenrealtgl: also apply the RPL/ADL-borne ExecList/LRCA
+    // context-repair fixes (V507/V508/V509) on genuine TGL hardware. Real-TGL
+    // testing (upstream issue #20) proved the native-init gaps these fixes
+    // address exist on real TGL too, but upstream keeps them gated off.
+    bool realTGLFixes = false;
 public:
     bool getIsRealTGL() const { return isRealTGL; }
+    // True when the ExecList/LRCA context-repair paths may run on this machine.
+    bool tglCtxRepairEnabled() const { return !isRealTGL || realTGLFixes; }
 private:
     bool dmcIsAdlp = false;    // true when ADL-P DMC blob was loaded in hwInitializeCState
     void adlpDcExit(const char *caller);

@@ -5082,7 +5082,7 @@ void Gen11::populateResetRegisterList(void *that)
 	// so the slot gets wiped by stopGraphicsEngine and never repaired by V508.
 	auto *cb = NGreen::callback;
 	void *ctx = cb->lastRCSCtx;
-	if (!cb->isRealTGL && ctx) {
+	if (cb->tglCtxRepairEnabled() && ctx) {
 		uint32_t lrcaGpuVa = getMember<uint32_t>(ctx, 0x89) & 0xFFFFF000;
 		if (lrcaGpuVa) {
 			uint32_t ctxPage1Idx = (lrcaGpuVa >> 12) + 1;
@@ -5787,7 +5787,7 @@ uint64_t Gen11::IGHardwareContextinitWithOptions(void *that, void *task, const v
 	uint64_t ret = FunctionCast(IGHardwareContextinitWithOptions,
 	                             callback->oIGHardwareContextinitWithOptions)(that, task, params, arg);
 	auto *cb = NGreen::callback;
-	if (cb->isRealTGL || !ret) return ret;
+	if (!cb->tglCtxRepairEnabled() || !ret) return ret;
 
 	uint8_t engType = getMember<uint8_t>(that, 0x6c);
 	if (engType != 0) return ret;  // only repair RCS (case 0)
@@ -5876,7 +5876,7 @@ void *Gen11::IGHardwareContextwithOptions(void *task, const void *params, uint8_
 	void *ctx = FunctionCast(IGHardwareContextwithOptions,
 	                         callback->oIGHardwareContextwithOptions)(task, params, arg);
 	auto *cb = NGreen::callback;
-	if (cb->isRealTGL || !ctx) return ctx;
+	if (!cb->tglCtxRepairEnabled() || !ctx) return ctx;
 
 	uint8_t engType = getMember<uint8_t>(ctx, 0x6c);
 

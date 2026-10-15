@@ -262,6 +262,10 @@ void NGreen::processPatcher(KernelPatcher &patcher) {
             if (family == 0x6) model |= (extModel << 4);
             this->cpuModel = model;
             this->isRealTGL = (model == 0x8C || model == 0x8D);
+            if (this->isRealTGL && checkKernelArgument("-ngreenrealtgl")) {
+                this->realTGLFixes = true;
+                SYSLOG("ngreen", "V52: -ngreenrealtgl: enabling V507-V509 context-repair fixes on genuine TGL");
+            }
             SYSLOG("ngreen", "V52: CPU family=0x%x model=0x%x stepping=%u isRealTGL=%d",
                    family, model, stepping, this->isRealTGL);
         }
